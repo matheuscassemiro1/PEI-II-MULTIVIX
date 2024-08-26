@@ -1,0 +1,23 @@
+{
+  "name": "pei",
+  "version": "1.0.0",
+  "description": "PEI II Multivix",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "NODE_ENV=development node --watch server.js || set NODE_ENV=development && node --watch server.js"
+  },
+  "keywords": [],
+  "author": "Matheus Cassemiro, Wagner, Maisa, Filipe e Rafael",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-cron": "^3.0.3",
+    "node-json-db": "^2.3.0",
+    "zod": "^3.23.8"
+  }
+}
