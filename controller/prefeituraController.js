@@ -1,6 +1,5 @@
 export const prefeituraController = {
     buscarAtualizacao: async () => {
-        console.log("a")
         await fetch('https://wstransparencia.serra.es.gov.br/api/emenda')
             .catch(error => { console.log(error) })
             .then(async dados => {

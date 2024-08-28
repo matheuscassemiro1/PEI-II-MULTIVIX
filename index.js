@@ -10,7 +10,7 @@ import { prefeituraController } from './controller/prefeituraController.js';
 //SETUP DO SERVIDOR
 export const app = express();
 export const httpListener = createServer(app);
-import { database } from './database.js';
+
 
 //RECEPÇÃO DE DADOS E CABEÇALHO
 app.use(bodyParser.json());
@@ -32,9 +32,10 @@ const tarefa = cron.schedule('* */6 * * *', async () => {
     prefeituraController.buscarAtualizacao();
     console.log("cronjob executado")
 }, { scheduled: false });
-prefeituraController.buscarAtualizacao();
+///prefeituraController.buscarAtualizacao();
 
 httpListener.listen(env.PORTA, async () => {
-    tarefa.start();
+    //tarefa.start();
+    //consultaController.cadastrarConsulta();
     console.log(`Aplicação ligada na porta ${env.PORTA}`)
 })
