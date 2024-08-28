@@ -5,9 +5,7 @@ export const consultaController = {
         return await database
             .select()
             .from("consultas")
-            .catch(error => {
-                throw new Error("Falha ao consultar");
-            })
+            .catch(error => { console.log(error) })
             .then(dados => {
                 return dados;
             })
@@ -16,7 +14,7 @@ export const consultaController = {
         return await database
             .insert({ numero: "213213213" })
             .from("consultas")
-            .catch(error => { throw new Error(error) })
+            .catch(error => { console.error(error) })
             .then(dados => {
                 console.log("CONSULTA CADASTRADA")
                 console.log(dados[0])

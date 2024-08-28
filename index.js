@@ -4,9 +4,12 @@ import { JsonDB, Config } from 'node-json-db'
 import cron from 'node-cron';
 import { createServer } from "http"
 import cors from 'cors'
+
 import { env } from './env/environment.js';
 import { apiRouter } from './routes/api.js';
 import { prefeituraController } from './controller/prefeituraController.js';
+import { usuarioController } from './controller/usersController.js';
+
 //SETUP DO SERVIDOR
 export const app = express();
 export const httpListener = createServer(app);
@@ -31,11 +34,11 @@ app.use('', apiRouter)
 const tarefa = cron.schedule('* */6 * * *', async () => {
     prefeituraController.buscarAtualizacao();
     console.log("cronjob executado")
+    console.log(new Date().toTimeString())
 }, { scheduled: false });
-///prefeituraController.buscarAtualizacao();
 
 httpListener.listen(env.PORTA, async () => {
-    //tarefa.start();
-    //consultaController.cadastrarConsulta();
+    tarefa.start();
+    console.log(await usuarioController.listarUsuariosAtivos())
     console.log(`Aplicação ligada na porta ${env.PORTA}`)
 })
