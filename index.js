@@ -6,7 +6,7 @@ import { createServer } from "http"
 import cors from 'cors'
 import { env } from './env/environment.js';
 import { apiRouter } from './routes/api.js';
-
+import { prefeituraController } from './controller/prefeituraController.js';
 //SETUP DO SERVIDOR
 export const app = express();
 export const httpListener = createServer(app);
@@ -28,8 +28,10 @@ app.use('', apiRouter)
 
 /// AGENDAMENTO DISPARA A CADA 6H
 const tarefa = cron.schedule('* */6 * * *', async () => {
+    prefeituraController.buscarAtualizacao();
     console.log("cronjob executado")
 }, { scheduled: false });
+prefeituraController.buscarAtualizacao();
 
 httpListener.listen(env.PORTA, async () => {
     tarefa.start();
