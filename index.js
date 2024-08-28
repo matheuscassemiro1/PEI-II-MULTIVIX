@@ -10,6 +10,7 @@ import { prefeituraController } from './controller/prefeituraController.js';
 //SETUP DO SERVIDOR
 export const app = express();
 export const httpListener = createServer(app);
+import { database } from './database.js';
 
 //RECEPÇÃO DE DADOS E CABEÇALHO
 app.use(bodyParser.json());
