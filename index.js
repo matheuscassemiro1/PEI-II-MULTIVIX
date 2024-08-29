@@ -9,6 +9,7 @@ import { env } from './env/environment.js';
 import { apiRouter } from './routes/api.js';
 import { prefeituraController } from './controller/prefeituraController.js';
 import { usuarioController } from './controller/usersController.js';
+import { whatsappController } from './controller/whatsappController.js';
 
 //SETUP DO SERVIDOR
 export const app = express();
@@ -39,6 +40,6 @@ const tarefa = cron.schedule('* */6 * * *', async () => {
 
 httpListener.listen(env.PORTA, async () => {
     tarefa.start();
-    console.log(await usuarioController.listarUsuariosAtivos())
+    whatsappController.enviarMsg()
     console.log(`Aplicação ligada na porta ${env.PORTA}`)
 })
