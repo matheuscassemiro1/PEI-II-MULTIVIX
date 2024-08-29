@@ -1,13 +1,13 @@
 export const whatsappController = {
     enviarMsg: async () => {
-        await fetch('https://graph.facebook.com/v20.0/432598149927406/messages', {
+        await fetch('https://graph.facebook.com/v20.0/x/messages', {
             method: "post",
             headers: {
-                "Authorization": "Bearer EAARnxhFxvIcBO3Tl0ImUZAQkoEYW7ZCxs0ZCHe41yFa7kNb91VCZALdTZC0lqOUXKKAW7WcGqFZAVXXpjMa1l6BSX1wfdqGd7ZAXHMcIgJkqEu5lTG2bYVKepE07OMPeN5NJYyJFmRnDPjUefSh7h28ExS33fs5MWoKZAAyWQJ5XBTFRBckYQ9LS2ckK3NWytZAnKynJGjqvWUWtqE8fH9ZB0ZD",
+                "Authorization": "x",
                 "Content-Type": "application/json",
 
             },
-            body: { messaging_product: "whatsapp", to: "+5527998568286", type: "template", name: "Mensagem teste", language: { code: "en_US" } }
+            body: { messaging_product: "whatsapp", to: "+55x", type: "template", name: "Mensagem teste", language: { code: "en_US" } }
         })
             .catch(error => { console.log(error) })
             .then(async dados => {
@@ -21,7 +21,7 @@ export const whatsappController = {
 //////////////////BODY REQ WHATSAPP PUSH
 /* {
     "messaging_product": "whatsapp",
-    "to": "+5527998568286",
+    "to": "+x",
     "type": "template",
     "template": {
       "name": "hello_world",
