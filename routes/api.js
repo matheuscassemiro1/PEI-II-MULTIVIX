@@ -1,6 +1,7 @@
 import express from 'express';
 import { usuarioController } from '../controller/usersController.js';
 
+
 export const apiRouter = express();
 
 apiRouter.get("/", async (req, res, next) => {
@@ -17,7 +18,7 @@ apiRouter.post("/hook", async (req, res, next) => {
     console.log(req.query)
     console.log(req.body)
     ///req.body.entry[0].changes[0].value.message_echoes  ---> dados recebidos do webhook echoes
-    res.status(200).send(challenge);
+    res.sendStatus(200);
 })
 
 apiRouter.post("/users", async (req, res, next) => {
