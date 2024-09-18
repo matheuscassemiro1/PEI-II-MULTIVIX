@@ -4,9 +4,16 @@ switch (process.env.NODE_ENV) {
     case 'development':
         config({ path: '.env.development' });
         console.log("Ambiente de desenvolvimento");
-    default:
+        break
+    case 'production':
         config({ path: '.env' })
         console.log("Ambiente de produção");
+        break
+    default:
+        console.log(process.env.NODE_ENV)
+        config({ path: '.env' })
+        console.log("Ambiente de produção setado automáticamente");
+        break
 }
 const envSchema = z.object({
     NODE_ENV: z
@@ -18,7 +25,8 @@ const envSchema = z.object({
     DATABASE_LOGIN: z.string(),
     DATABASE_PASSWORD: z.string().nullable(),
     DATABASE_NAME: z.string(),
-    DATABASE_DIALECT: z.string()
+    DATABASE_DIALECT: z.string(),
+    TELEGRAM_TOKEN: z.string()
 })
 
 export const _env = envSchema.safeParse(process.env)

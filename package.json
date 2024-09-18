@@ -7,6 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development node --watch index.js || set NODE_ENV=development && node --watch index.js",
+    "prod": "NODE_ENV=production node --watch index.js || set NODE_ENV=production && node --watch index.js",
     "knex-latest": "knex migrate:latest"
   },
   "keywords": [],
@@ -21,6 +22,7 @@
     "mysql2": "^3.11.0",
     "node-cron": "^3.0.3",
     "node-json-db": "^2.3.0",
+    "node-telegram-bot-api": "^0.66.0",
     "pg": "^8.12.0",
     "zod": "^3.23.8"
   }
