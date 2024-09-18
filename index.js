@@ -6,11 +6,12 @@ import { createServer } from "http"
 import cors from 'cors'
 
 
-import { env } from './env/environment.js';
+
 import { apiRouter } from './routes/api.js';
 import { prefeituraController } from './controller/prefeituraController.js';
-import { usuarioController } from './controller/usersController.js';
-import { carregarComandosTelegram, instanciaTelegram } from './botTelegram.js';
+
+import { carregarComandosTelegram } from './botTelegram.js';
+
 
 
 //SETUP DO SERVIDOR
@@ -48,7 +49,3 @@ try{
     console.warn(`Erro ao carregar comandos do bot -> ${error}`);
 }
 
-httpListener.listen(env.PORTA, async () => {
-    //tarefa.start();
-    console.log(`Aplicação ligada na porta ${env.PORTA}`)
-})
