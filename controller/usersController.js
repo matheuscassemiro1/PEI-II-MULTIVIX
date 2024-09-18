@@ -1,11 +1,14 @@
 import { database } from "../database.js";
 
 export const usuarioController = {
-    criarUsuario: async (nome, numero) => {
-        database
-            .insert({ nome: nome, numero: numero, ativo: 1 })
+    criarUsuario: async (nome, chatId) => {
+        return database
+            .insert({ nome: nome, chatId: chatId, ativo: 1 })
             .from("usuarios")
-            .catch(error => { console.error(error.sqlMessage) })
+            .catch(error => {
+                console.error(error)
+                throw new Error(error)
+            })
             .then(dados => {
                 return dados
             })
@@ -20,11 +23,11 @@ export const usuarioController = {
                 return dados
             })
     },
-    inativarUsuario: async (numero) => {
+    cancelarUsuario: async (chatId) => {
         database
-            .update({ ativo: 0 })
+            .delete()
             .from('usuarios')
-            .where({ numero: numero })
+            .where({ chatId: chatId })
             .catch(error => { throw new Error(error) })
             .then(dados => {
                 return dados

@@ -2,19 +2,25 @@ import { env } from "./env/environment.js";
 import knex from "knex";
 
 export const config = {
-    client: env.DATABASE_DIALECT,
+    client: 'sqlite3',
     connection: {
-        host: env.DATABASE_HOST,
-        port: env.DATABASE_PORT,
-        user: env.DATABASE_LOGIN,
-        password: env.DATABASE_PASSWORD,
-        database: env.DATABASE_NAME,
+        filename: './store.db'
     },
     useNullAsDefault: true,
     migrations: {
         extension: 'js',
         directory: './migrations',
-    },
+    }
 };
 
 export const database = new knex(config);
+
+export async function realizarMigrations() {
+    return await database.migrate.latest({
+        directory: [
+            './migrations',
+        ],
+        sortDirsSeparately: true,
+        tableName: "knex_migrations"
+    });
+}
