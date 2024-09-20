@@ -5,20 +5,20 @@ export const consultaController = {
         return await database
             .select()
             .from("consultas")
-            .catch(error => { console.log(error) })
+            .catch(error => { throw new Error(error) })
             .then(dados => {
                 return dados;
             })
     },
-    cadastrarConsulta: async () => {
+    cadastrarConsulta: async (numero) => {
         return await database
-            .insert({ numero: "213213213" })
+            .insert({ numero: numero })
             .from("consultas")
-            .catch(error => { console.error(error) })
+            .catch(error => { throw new Error(error) })
             .then(dados => {
-                console.log("CONSULTA CADASTRADA")
-                console.log(dados[0])
+                if (dados[0]) {
+                    console.log(`Consulta #${numero} cadastrada`)
+                }
             })
-
     }
 }
