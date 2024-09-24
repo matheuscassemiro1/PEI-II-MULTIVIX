@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 import { env } from './env/environment.js';
 import { usuarioController } from "./controller/usersController.js";
 import { realizarMigrations } from "./database.js";
-
+import { prefeituraController } from "./controller/prefeituraController.js";
 export const instanciaTelegram = new TelegramBot(env.TELEGRAM_TOKEN, { polling: true });
 
 const comandos = [
@@ -43,7 +43,10 @@ instanciaTelegram.on('message', async (mensagem) => {
 
             break;
         case '/atualizar':
-            instanciaTelegram.sendMessage(chatId, "*Última atualização emitida pela prefeitura*");
+            const resposta = await prefeituraController.buscarAtualizacao();
+            const retorno = resposta[0];
+            instanciaTelegram.sendMessage(chatId, `*Última atualização emitida pela prefeitura*\n N°: ${retorno.numero} \n Partido: ${retorno.partido} \n Parlamentar: ${retorno.parlamentar} \n Data: ${retorno.data} \n Destino: ${retorno.destino} \n Valor: ${retorno.valor} \n Situação: ${retorno.situacao} \n Descrição: ${retorno.descricao}`);
+            console.log(`Atualização enviada para o usuário solicitado. ChatID ${chatId} | Nome: ${mensagem.chat.first_name}`)
             break
         case '/ajuda':
             instanciaTelegram.sendMessage(chatId, "**Lista de Comandos** \n/cadastrar -> Cadastra a sua conta para receber atualizações\n/cancelar -> Cancela o recebimento de novas atualizações da prefeitura\n/atualizar -> Recebe a última atualização inserida no site da prefeitura");
