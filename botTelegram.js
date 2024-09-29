@@ -43,9 +43,9 @@ instanciaTelegram.on('message', async (mensagem) => {
 
             break;
         case '/atualizar':
-            console.log("inicio solicitação atualizar")
+            console.log("--inicio solicitação atualizar")
             const resposta = await prefeituraController.buscarAtualizacao();
-            const retorno = resposta[0];
+            const retorno = JSON.parse(resposta)[0];
             instanciaTelegram.sendMessage(chatId, `*Última atualização emitida pela prefeitura*\n*N°:* ${retorno.numero}\nPartido: ${retorno.partido}\nParlamentar: ${retorno.Parlamentar}\n*Data:* ${retorno.data}\n*Destino:* ${retorno.destino}\n*Valor:* ${retorno.valor}\n*Situação:* ${retorno.Situacao}\n*Descrição:*\n${retorno.descricao}`, {parse_mode: 'Markdown'});
             console.log(`Atualização enviada para o usuário solicitado. ChatID ${chatId} | Nome: ${mensagem.chat.first_name}`)
             break
