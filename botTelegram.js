@@ -30,7 +30,6 @@ instanciaTelegram.on('message', async (mensagem) => {
                         instanciaTelegram.sendMessage(chatId, "Você foi cadastrado para receber atualizações");
                     }
                 })
-
             break
         case '/cancelar':
             await usuarioController.cancelarUsuario(chatId)
@@ -40,14 +39,20 @@ instanciaTelegram.on('message', async (mensagem) => {
                 .then(resposta => {
                     instanciaTelegram.sendMessage(chatId, "Você cancelou o recebimento de atualizações");
                 })
-
             break;
         case '/atualizar':
-            console.log("--inicio solicitação atualizar")
-            const resposta = await prefeituraController.buscarAtualizacao();
-            const retorno = JSON.parse(resposta)[0];
-            instanciaTelegram.sendMessage(chatId, `*Última atualização emitida pela prefeitura*\n*N°:* ${retorno.numero}\nPartido: ${retorno.partido}\nParlamentar: ${retorno.Parlamentar}\n*Data:* ${retorno.data}\n*Destino:* ${retorno.destino}\n*Valor:* ${retorno.valor}\n*Situação:* ${retorno.Situacao}\n*Descrição:*\n${retorno.descricao}`, {parse_mode: 'Markdown'});
-            console.log(`Atualização enviada para o usuário solicitado. ChatID ${chatId} | Nome: ${mensagem.chat.first_name}`)
+            try {
+                console.log("O comando /atualizar foi utilizado")
+                instanciaTelegram.sendMessage(chatId, `*Um momento... Carregando dados*`)
+                const resposta = await prefeituraController.buscarAtualizacao();
+                const retorno = JSON.parse(resposta)[0];
+                instanciaTelegram.sendMessage(chatId, `*Última atualização emitida pela prefeitura*\n*N°:* ${retorno.numero}\nPartido: ${retorno.partido}\nParlamentar: ${retorno.Parlamentar}\n*Data:* ${retorno.data}\n*Destino:* ${retorno.destino}\n*Valor:* ${retorno.valor}\n*Situação:* ${retorno.Situacao}\n*Descrição:*\n${retorno.descricao}`, { parse_mode: 'Markdown' });
+                console.log(`Atualização enviada para o usuário solicitado. ChatID ${chatId} | Nome: ${mensagem.chat.first_name}`)
+            } catch (error) {
+                console.log('ERRO AO ENVIAR /ATUALZIAR')
+                console.log(error)
+                instanciaTelegram.sendMessage(chatId, `*Ops... Ocorreu um erro*`)
+            }
             break
         case '/ajuda':
             instanciaTelegram.sendMessage(chatId, "**Lista de Comandos** \n/cadastrar -> Cadastra a sua conta para receber atualizações\n/cancelar -> Cancela o recebimento de novas atualizações da prefeitura\n/atualizar -> Recebe a última atualização inserida no site da prefeitura");
@@ -67,3 +72,16 @@ instanciaTelegram.on('message', async (mensagem) => {
     }
 
 })
+
+export async function dispararNotificacaoUsuariosAtivos(hora) {
+    const usersAtivos = await usuarioController.listarUsuariosAtivos()
+    usersAtivos.forEach(user => {
+        try {
+            instanciaTelegram.sendMessage(user.chatId, `Não possuimos atualizações da Prefeitura, *${user.nome}*! Nossas atualizações são feitas às 11h e 17h de todos os dias.`, { parse_mode: 'Markdown' })
+            console.log(`Mensagem disparada para ${user.nome}`)
+        } catch (error) {
+            console.log(`Erro ao disparar para ${user.nome}`)
+            console.log(error)
+        }
+    })
+}
