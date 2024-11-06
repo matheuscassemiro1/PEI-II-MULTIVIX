@@ -20,5 +20,15 @@ export const consultaController = {
                     console.log(`Consulta #${numero} cadastrada`)
                 }
             })
+    },
+    checarConsulta: async (numero) => {
+        return await database
+            .select()
+            .from("consultas")
+            .where({ numero: numero })
+            .catch(error => { throw new Error(error) })
+            .then(dados => {
+                return dados;
+            })
     }
 }
