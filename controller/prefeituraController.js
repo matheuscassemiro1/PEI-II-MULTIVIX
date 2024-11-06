@@ -2,9 +2,9 @@ import * as https from 'https';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
 async function buscarDados() {
-    //const agent = new HttpsProxyAgent('http://189.113.117.135:8080')
-    //colocar o agent nos options
+    const agent = new HttpsProxyAgent('http://189.113.117.135:8080')
     const options = {
+        agent,
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
