@@ -11,7 +11,7 @@
     "knex-latest": "knex migrate:latest"
   },
   "keywords": [],
-  "author": "Matheus Cassemiro, Wagner, Maisa, Filipe e Rafael",
+  "author": "Matheus Cassemiro, Wagner Carvalho, Maiza Pereira, Filipi Fontes e Rafael Santos",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
