@@ -3,6 +3,7 @@ import { env } from './env/environment.js';
 import { usuarioController } from "./controller/usersController.js";
 import { realizarMigrations } from "./database.js";
 import { prefeituraController } from "./controller/prefeituraController.js";
+import { consultaController } from "./controller/consultsController.js";
 export const instanciaTelegram = new TelegramBot(env.TELEGRAM_TOKEN, { polling: true });
 
 const comandos = [
@@ -12,13 +13,17 @@ const comandos = [
 ]
 
 export async function carregarComandosTelegram() {
-    await instanciaTelegram.setMyCommands(comandos);
-    await instanciaTelegram.getMyCommands();
+    try {
+        await instanciaTelegram.setMyCommands(comandos);
+        await instanciaTelegram.getMyCommands();
+        console.log("Comandos carregados com sucesso.")
+    } catch {
+        throw new Error("Falha ao cadastrar comandos.")
+    }
 }
 
 instanciaTelegram.on('message', async (mensagem) => {
     let chatId = mensagem.chat.id;
-
     switch (mensagem.text.toLocaleLowerCase()) {
         case '/cadastrar':
             await usuarioController.criarUsuario(mensagem.chat.first_name, chatId)
@@ -66,6 +71,15 @@ instanciaTelegram.on('message', async (mensagem) => {
             await realizarMigrations();
             instanciaTelegram.sendMessage(chatId, "Migrations realizadas no banco.")
             break;
+        case '/preencher':
+            try {
+                await primeiroCadastroBanco();
+                instanciaTelegram.sendMessage(chatId, "O banco foi preenchido com os dados do endpoint de emendas da Prefeitura da Serra.")
+            } catch (error) {
+                console.log(error)
+                instanciaTelegram.sendMessage(chatId, "Ocorreu um erro ao preencher o banco")
+            }
+            break;
         default:
             instanciaTelegram.sendMessage(chatId, "Comando não identificado, digite /ajuda para checar os comandos disponíveis");
             break
@@ -73,15 +87,62 @@ instanciaTelegram.on('message', async (mensagem) => {
 
 })
 
-export async function dispararNotificacaoUsuariosAtivos(hora) {
-    const usersAtivos = await usuarioController.listarUsuariosAtivos()
-    usersAtivos.forEach(user => {
-        try {
-            instanciaTelegram.sendMessage(user.chatId, `Não possuimos atualizações da Prefeitura, *${user.nome}*! Nossas atualizações são feitas às 11h e 17h de todos os dias.`, { parse_mode: 'Markdown' })
-            console.log(`Mensagem disparada para ${user.nome}`)
-        } catch (error) {
-            console.log(`Erro ao disparar para ${user.nome}`)
-            console.log(error)
-        }
-    })
+async function primeiroCadastroBanco() {
+    try {
+        const attPrefeitura = await prefeituraController.buscarAtualizacao();
+        attPrefeitura.forEach(async dado => {
+            if (!await consultaController.checarConsulta(dado)) {
+                consultaController.cadastrarConsulta(dado);
+                console.log(`Nova consulta adicionada ao banco. Número: ${dado}`)
+            }
+        })
+    } catch (error) {
+        console.log("Erro ao preencher o banco")
+        console.log(error)
+    }
+}
+
+export async function dispararNotificacaoUsuariosAtivos() {
+    const usersAtivos = await usuarioController.listarUsuariosAtivos();
+    try {
+        const attPrefeitura = await prefeituraController.buscarAtualizacao();
+        usersAtivos.forEach(async user => {
+            try {
+                const buscaDados = JSON.parse(attPrefeitura);
+                const consultas = await consultaController.listarConsultas();
+                buscaDados.forEach(retorno => {
+                    if (!consultas.find(elemento => retorno.numero == elemento.numero)) {
+                        console.log("entrei no foreach de não encontrado")
+                        setTimeout(() => {
+                            instanciaTelegram.sendMessage(user.chatId, `*Nova atualização obtida da Prefeitura da Serra!*\n*N°:* ${retorno.numero}\nPartido: ${retorno.partido}\nParlamentar: ${retorno.Parlamentar}\n*Data:* ${retorno.data}\n*Destino:* ${retorno.destino}\n*Valor:* ${retorno.valor}\n*Situação:* ${retorno.Situacao}\n*Descrição:*\n${retorno.descricao}`, { parse_mode: 'Markdown' });
+                            console.log(`Atualização diária enviada enviada para o usuário. ChatID ${user.chatId} | Nome: ${user.nome}`);
+                        }, 1000)
+                    }
+                })
+                setTimeout(() => {
+                    instanciaTelegram.sendMessage(user.chatId, `Não possuimos atualizações da Prefeitura, *${user.nome}*! Nossas atualizações são feitas às 11h e 17h de todos os dias.`, { parse_mode: 'Markdown' })
+                }, 1000)
+                console.log(`Mensagem disparada para ${user.nome}`)
+            } catch (error) {
+                console.log(`Erro ao disparar para ${user.nome}`)
+                console.log(error)
+                setTimeout(() => {
+                    instanciaTelegram.sendMessage(user.chatId, `*Ops... Ocorreu um erro ao realizar a notificação diária*`, { parse_mode: 'Markdown' })
+                }, 1000)
+            }
+        })
+        attPrefeitura.forEach(async dado => {
+            if (!await consultaController.checarConsulta(dado)) {
+                consultaController.cadastrarConsulta(dado);
+                console.log(`Nova consulta adicionada ao banco. Número: ${dado}`)
+            }
+        })
+    } catch (e) {
+        usersAtivos.forEach(async user => {
+            setTimeout(() => { instanciaTelegram.sendMessage(user.chatId, `Não possuimos atualizações da Prefeitura, *${user.nome}*! Nossas atualizações são feitas às 11h e 17h de todos os dias.`, { parse_mode: 'Markdown' }) }, 1000)
+        })
+        console.log(e)
+        console.log("Erro ao realizar a consulta diária.")
+    }
+
 }
